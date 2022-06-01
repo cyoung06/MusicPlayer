@@ -76,6 +76,8 @@ public class MusicPlayerContext implements Runnable {
                     String s = SinewaveRegistry.getBestSound(bin.frequency);
                     double freq = SinewaveRegistry.getFrequency(s);
                     double fl = (bin.frequency / freq);
+                    if (fl < 0.5) continue;
+                    if (fl > 2.0) continue;
                     player.playSound(loc, s, SoundCategory.BLOCKS, (float) (volume * bin.amplitude/32768.0), (float) fl);
                     if (fl < minF) minF = fl;
                     if (fl > maxF) maxF = fl;
