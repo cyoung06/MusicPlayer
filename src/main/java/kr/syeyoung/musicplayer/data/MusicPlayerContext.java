@@ -30,7 +30,7 @@ public class MusicPlayerContext implements Runnable {
     public void run() { // Probably shouldn't play song here but idk
         player.sendMessage("Playing... "+file.getAbsolutePath());
         while(true) {
-            long time = System.currentTimeMillis();
+            long start = System.currentTimeMillis();
             if (!provider.prepareFrame()) {
                 break;
             }
@@ -51,8 +51,8 @@ public class MusicPlayerContext implements Runnable {
                 player.stopSound(sound);
             }
             int cnt = 0;
-            FrequencyBin lastBin = frame.bins[0];
-            boolean increasing = false;
+//            FrequencyBin lastBin = frame.bins[0];
+//            boolean increasing = false;
 //            for (FrequencyBin bin : frame.bins) {
 //                if (bin.amplitude < lastBin.amplitude) {
 //                    if (lastBin.amplitude > 0.05 && increasing) {
@@ -67,17 +67,28 @@ public class MusicPlayerContext implements Runnable {
 //                }
 //                lastBin = bin;
 //            }
+            double minF = 2;
+            double maxF = 0.5;
             for (FrequencyBin bin : frame.bins) {
                 if (bin.amplitude > 0.05) {
                     String s = SinewaveRegistry.getBestSound(bin.frequency);
                     double freq = SinewaveRegistry.getFrequency(s);
-                    player.playSound(loc, s, SoundCategory.BLOCKS, (float) (volume * bin.amplitude), (float) (bin.frequency / freq));
+                    double fl = (bin.frequency / freq);
+                    player.playSound(loc, s, SoundCategory.BLOCKS, (float) (volume * bin.amplitude), (float) fl);
+                    if (fl < minF) minF = fl;
+                    if (fl > maxF) maxF = fl;
                     cnt++;
                 }
             }
-            long targetMS = (long)(frame.frameEndMs - frame.frameStartMs) + time;
+            long frameLength = (long)(frame.frameEndMs - frame.frameStartMs);
+            long sleep = start-System.currentTimeMillis() + frameLength;
+
+            player.sendTitle("count:" + cnt, "min:" + String.format("%.3f", minF) + " max:" + String.format("%.3f", maxF) + " time:" + sleep, 0, 40, 10);
+
+            if (sleep < 0) sleep = 0;
+
             try {
-                Thread.sleep(targetMS - System.currentTimeMillis() - 5);
+                Thread.sleep(sleep);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

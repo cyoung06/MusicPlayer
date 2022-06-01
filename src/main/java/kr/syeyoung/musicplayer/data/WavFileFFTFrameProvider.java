@@ -14,7 +14,7 @@ import java.io.IOException;
 public class WavFileFFTFrameProvider implements FFTProvider {
     public WavFileFFTFrameProvider(File f) throws UnsupportedAudioFileException, IOException {
         result = new QuiFFT(f)
-                .windowSize(2048)
+//                .windowSize(2048)
                 .dBScale(false)
                 .windowFunction(WindowFunction.RECTANGULAR)
                 .normalized(true)
