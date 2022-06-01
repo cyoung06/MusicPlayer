@@ -3,6 +3,7 @@ package kr.syeyoung.musicplayer;
 import kr.syeyoung.musicplayer.data.MusicPlayerContext;
 import kr.syeyoung.musicplayer.data.StaticVolumeSetting;
 import kr.syeyoung.musicplayer.data.WavFileFFTFrameProvider;
+import kr.syeyoung.musicplayer.data.WavFileFFTFrameStreamProvider;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -41,17 +42,18 @@ public final class Musicplayer extends JavaPlugin {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 0 ){
-            sender.sendMessage("/mpplay play (wav파일 / fftdat파일) - 바로 재생");
+            sender.sendMessage("/mpplay play (wav파일 / fftdat파일) (volume) - 바로 재생");
             sender.sendMessage("/mpplay transform (wav파일) - 전처리");
         } else  {
             if (args[0].equals("play")) {
                 File f = new File(args[1]);
                 try {
+                    sender.sendMessage("Creating context...");
                     MusicPlayerContext context = new MusicPlayerContext();
                     context.setMusicId(UUID.randomUUID());
                     context.setPlayer((Player) sender);
-                    context.setVolumeSettings(new StaticVolumeSetting(1.0));
-                    context.setProvider(new WavFileFFTFrameProvider(f));
+                    context.setVolumeSettings(new StaticVolumeSetting(Double.parseDouble(args[2])));
+                    context.setProvider(new WavFileFFTFrameStreamProvider(f));
                     context.setFile(f);
                     Thread t = new Thread(context);
                     t.start();

@@ -17,7 +17,7 @@ public class WavFileFFTFrameProvider implements FFTProvider {
 //                .windowSize(2048)
                 .dBScale(false)
                 .windowFunction(WindowFunction.RECTANGULAR)
-                .normalized(true)
+//                .normalized(true)
                 .fullFFT();
         System.out.println(result.fftParameters.isNormalized);
     }
