@@ -19,7 +19,7 @@ public class SinewaveRegistry {
     }
 
     private static void register(Double freq, String sound) {
-        FREQUENCY_SOUND.put(freq, sound);
+        FREQUENCY_SOUND.put(Math.log(freq), sound);
         SOUND_FREQUENCY.put(sound, freq);
     }
 
@@ -27,14 +27,17 @@ public class SinewaveRegistry {
         return SOUND_FREQUENCY.get(s);
     }
 
-    public static String getBestSound(double freq) {
+    public static String getBestSound(double freq2) {
+        double freq = Math.log(freq2);
         Double key2 = FREQUENCY_SOUND.floorKey(freq);
         Double key1 = FREQUENCY_SOUND.ceilingKey(freq);
         if (key2 == null) return FREQUENCY_SOUND.get(key1);
-        if (0.5 <Math.abs(freq / key2) && Math.abs(freq / key2) < 2.0) {
+        if (key1 == null) return FREQUENCY_SOUND.get(key2);
+
+        if (key1 + key2 > 2*freq) {
             return FREQUENCY_SOUND.get(key2);
         } else {
-            return FREQUENCY_SOUND.get(key2);
+            return FREQUENCY_SOUND.get(key1);
         }
     }
 }
